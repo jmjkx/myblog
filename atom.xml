@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>John Doe&#39;s blog</title>
+  <title>Matrix Man&#39;s blog</title>
   
   
   <link href="https://jmjkx.github.io/myblog/atom.xml" rel="self"/>
@@ -10,7 +10,7 @@
   <id>https://jmjkx.github.io/myblog/</id>
   
   <author>
-    <name>John Doe</name>
+    <name>CodingFucker</name>
     
   </author>
   
