@@ -1,0 +1,142 @@
+<!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>跑深度学习代码时自动选择显卡</title><meta name="description" content="一个码痴, 为码而生"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/%E5%A4%B4%E5%83%8F.jpg"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+引言长期以来，笔者在跑深度学习实验时，总会遇到这样一个问题: 究竟该选哪块(or 哪几块)卡？因为笔者使用的服务器一共有9块显卡, 有10个人可以用，每个人随机时间段使用。那么很常见的情况就是, 我头一天跑过的代码，第二天再跑的时候运行了几分钟甚至十来分钟后突然报错: OOM Error。。。跟吃shit了一样难受，最后灰溜溜的在终端输入nvidia-smi(我alias了也还是感觉麻烦)，用肉眼分析哪几个剩余显卡可以用。对于使用tensorflow的同学来说，尤是一场灾难，因为tensorflow的前摇时间比pytorch真的长了不知道多少。因此，如果能在每个深度学习代码前，加一个自动检测可用显卡程序，岂不是节约了很多时间。
+问题探究1)try… except…
+伪代码
+for cardnumber i.."><!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.2.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="MatrixMan's blog" type="application/atom+xml">
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Coding Fxxker's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">跑深度学习代码时自动选择显卡</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-text">引言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%97%AE%E9%A2%98%E6%8E%A2%E7%A9%B6"><span class="toc-text">问题探究</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%8E%E8%AE%B0"><span class="toc-text">后记</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/%E6%AD%A3%E5%88%99%E5%BC%8F%E5%8C%B9%E9%85%8D"><i class="tag post-item-tag">正则式匹配</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">跑深度学习代码时自动选择显卡</h1><time class="has-text-grey" datetime="2021-07-22T16:43:08.000Z">2021-07-23</time><article class="mt-2 post-content"><p><img src="/2021/07/23/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%87%AA%E5%8A%A8%E9%80%89%E6%8B%A9%E6%98%BE%E5%8D%A1/%E6%98%BE%E5%8D%A1.jpg"></p>
+<h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>长期以来，笔者在跑深度学习实验时，总会遇到这样一个问题: 究竟该选哪块(or 哪几块)卡？<br>因为笔者使用的服务器一共有9块显卡, 有10个人可以用，每个人随机时间段使用。那么很常见的情况就是, 我头一天跑过的代码，第二天再跑的时候运行了几分钟甚至十来分钟后突然报错: OOM Error。。。跟吃shit了一样难受，最后灰溜溜的在终端输入nvidia-smi(我alias了也还是感觉麻烦)，用肉眼分析哪几个剩余显卡可以用。对于使用tensorflow的同学来说，尤是一场灾难，因为tensorflow的前摇时间比pytorch真的长了不知道多少。因此，如果能在每个深度学习代码前，加一个自动检测可用显卡程序，岂不是节约了很多时间。</p>
+<h3 id="问题探究"><a href="#问题探究" class="headerlink" title="问题探究"></a>问题探究</h3><p>1)try… except…</p>
+<p>伪代码</p>
+<pre><code class="python">for cardnumber in gpuList:
+    try:
+        os.environ["CUDA_VISIBLE_DEVICE"] = cardnumber
+        run_yourmodel()
+    except OOMERROR as e:
+        pass</code></pre>
+<p>这个方案问题在于试错成本太高。试想我在使用tensorflow, 每次运行前都会预先检查显卡的各种信息，然后oom，然后试下一个显卡，时间会爆炸。甚至遇到分布式训练时候，我难道要在候选显卡列表里，排列组合所有的显卡组合？显然不行，因此这个方案放弃。</p>
+<p>2)获取显卡信息后加载<br>在我的设想中，Nvidia官方应该是给了控制接口的，用于获取总的memory, 已经使用的memory, 剩余的memory。事实上, 还真的给了<span class="github-emoji"><span>😳</span><img src="https://github.githubassets.com/images/icons/emoji/unicode/1f633.png?v8" aria-hidden="true" onerror="this.parent.classList.add('github-emoji-fallback')"></span><br><a target="_blank" rel="noopener" href="https://developer.nvidia.com/nvidia-management-library-nvml">Nvidia nvml 显卡管理库</a><br>这个是基于C扩展, 不过有人贡献了py API<br><a target="_blank" rel="noopener" href="https://github.com/gpuopenanalytics/pynvml">Pynvml</a><br>笔者在半年多之前没有发现这个项目，当时强行解析nvidia-smi信息，分析过程如下<br>首先用python执行terminal命令获取显卡信息</p>
+<pre><code class="python">import os
+for i in os.popen('nvidia-smi').read():print(i)</code></pre>
+<p>返回</p>
+<pre><code>Fri Jul 23 21:05:39 2021
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 440.33.01    Driver Version: 440.33.01    CUDA Version: 10.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  TITAN RTX           Off  | 00000000:04:00.0 Off |                  N/A |
+| 40%   46C    P8     5W / 280W |     11MiB / 24220MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   1  TITAN RTX           Off  | 00000000:06:00.0 Off |                  N/A |
+| 97%   88C    P2   231W / 280W |  23526MiB / 24220MiB |    100%      Default |
++-------------------------------+----------------------+----------------------+
+|   2  TITAN RTX           Off  | 00000000:07:00.0 Off |                  N/A |
+| 41%   44C    P8     7W / 280W |     11MiB / 24220MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   3  TITAN V             Off  | 00000000:08:00.0 Off |                  N/A |
+| 34%   49C    P8    29W / 250W |     12MiB / 12066MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   4  TITAN RTX           Off  | 00000000:0B:00.0 Off |                  N/A |
+| 41%   44C    P8    15W / 280W |     11MiB / 24220MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   5  TITAN RTX           Off  | 00000000:0C:00.0 Off |                  N/A |
+| 41%   46C    P8     9W / 280W |     11MiB / 24220MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   6  TITAN Xp            Off  | 00000000:0D:00.0 Off |                  N/A |
+| 23%   39C    P8     9W / 250W |     10MiB / 12196MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   7  TITAN Xp            Off  | 00000000:0E:00.0 Off |                  N/A |
+| 25%   44C    P8    10W / 250W |     10MiB / 12196MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+|   8  TITAN RTX           Off  | 00000000:0F:00.0 Off |                  N/A |
+| 41%   46C    P8     1W / 280W |     11MiB / 24220MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|    1     61162      C   ...xxx/anaconda3/envs/xxx/bin/python 23515MiB |
++-----------------------------------------------------------------------------+</code></pre>
+<p>尝试指定显卡输出2号显卡信息</p>
+<pre><code class="python">import os
+for i in os.popen('nvidia-smi -2 1').read().split('\n'):print(i)</code></pre>
+<p>返回</p>
+<pre><code>Fri Jul 23 21:10:46 2021
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 440.33.01    Driver Version: 440.33.01    CUDA Version: 10.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   2  TITAN RTX           Off  | 00000000:07:00.0 Off |                  N/A |
+| 41%   44C    P8     6W / 280W |     11MiB / 24220MiB |      0%      Default |
++-------------------------------+----------------------+----------------------+
+
++-----------------------------------------------------------------------------+
+| Processes:                                                       GPU Memory |
+|  GPU       PID   Type   Process name                             Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+</code></pre>
+<p>那么问题很清楚了, 我们在获取指定显卡信息后，需要提取出 11MiB / 24220MiB 这个字段的两个数。这个手写逻辑提取不是不可以, 但幸好我们有正则式匹配。</p>
+<p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/48219401/answer/742444326?utm_source=wechat_session&amp;utm_medium=social&amp;utm_oi=627839486953000960&amp;utm_content=group3_Answer&amp;utm_campaign=shareopn">笔者参考的文章</a></p>
+<pre><code class="python">import os
+import re
+
+GPU_state = os.popen('nvidia-smi -i 2').read()
+print(re.findall('(\d+)(?=\s*MiB)', GPU_state))#(?=pattern)表示匹配pattern前面内容
+# 第一个(\d+)表示从后面匹配模式中第二次进行筛选, 匹配多个数字字符
+</code></pre>
+<p>这里简单解释一下含义。(?=\s*MiB)代表匹配<strong>前面有0次或多次空白符的MiB</strong>这里其实\s不加也可以,只是一种防错机制。 (\d+)表示匹配一次或多次数字， 连起来就是<strong>匹配MiB前面多个数字字符</strong></p>
+<p>返回</p>
+<pre><code>['11', '24220']</code></pre>
+<p>这正是我们想要的。<br>下面给出一个自动显卡获取程序autoGPU, 输入需要的显卡数, 每张卡需要的显存数, 自动选择显卡。</p>
+<pre><code class="python">def testGPU(id=0, mem_collect='auto'): 
+    GPU_state = os.popen('nvidia-smi -i %s' % str(id)).read()
+    GPU_type = re.findall('(?=TITAN\s).*?(?=\s+Off)', GPU_state)[0] #获取型号
+    Usage = re.findall('(\d+)(?=\s*MiB)', GPU_state)[0] #获取已使用显存
+    Memory = re.findall('(\d+)(?=\s*MiB)', GPU_state)[1] #获取总显存
+    IDLE =  int(Memory) - int(Usage) # 计算空闲显存
+    if mem_collect == 'auto': #自动模式, 获取完全空闲显卡
+        if int(Usage) &lt; 20: # 这里因为服务器开了gnome桌面服务, 会有不到20MiB显存占用
+            return 1, GPU_type, IDLE, int(Memory)
+        else:
+            return 0, GPU_type, IDLE, int(Memory)
+
+    else:
+        if IDLE &gt; mem_collect:
+            return 1, GPU_type, IDLE, int(Memory)
+        else:
+            return 0, GPU_type, IDLE, int(Memory)
+
+def autoGPU(GPU_NUM=6, GPU_MEM='auto'):
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID" #将显卡获取顺序调整为PCI_BUS_ID模式,否则和 nvidia-smi 中的显卡顺序不一致
+    ID = []
+    for i in [8, 5, 4, 2, 1, 0, 3, 7 ,6]: #自定义了一个显卡序号获取优先级顺序
+        is_val, GPU, Usa, Mem = testGPU(i, GPU_MEM) #输入显卡序号和需要的显存, 依次返回是否可用, GPU型号, 可用显存, 总共显存
+        if is_val == 1:
+            ID.append(str(i))
+            print('已选择第{}张卡，型号为{}，{}MB/{}MB显存可用'.format(i, GPU, Usa, Mem))
+            if len(ID) == GPU_NUM:
+                break
+    assert len(ID)==GPU_NUM, '你要求的显卡条件无法满足'
+    os.environ['CUDA_VISIBLE_DEVICES'] = ','.join(ID) # 设置显卡
+
+
+if __name__ == '__main__':
+    autoGPU(3, 'auto') #自动模式选择3张显卡</code></pre>
+<p>返回</p>
+<pre><code>已选择第8张卡，型号为TITAN RTX，24209MB/24220MB显存可用
+已选择第5张卡，型号为TITAN RTX，24209MB/24220MB显存可用
+已选择第4张卡，型号为TITAN RTX，24209MB/24220MB显存可用</code></pre>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>这小段程序还有很多可以提升的地方, 这里只抛砖引玉。另外当时写这个程序的时候没有查到Nvidia官方提供的API, 现在看来还是用官方的轮子好一点。不过因此学习了一点正则式匹配, 也算有点收获。</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><em></em><a class="button is-default" href="/2021/07/05/%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%85%AC%E5%BC%80%E6%95%B0%E6%8D%AE%E9%9B%86python%E7%88%AC%E8%99%AB/" title="零基础快速搭建公开数据集python爬虫"><span class="has-text-weight-semibold">Next: 零基础快速搭建公开数据集python爬虫</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="Haojen/Claudia-theme-blog" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><a title="twitter" target="_blank" rel="noopener nofollow" href="//twitter.com/jmjkx111"><i class="iconfont icon-twitter"></i></a><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/jmjkx"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/jmjkx"><i class="iconfont icon-ins"></i></a><!-- RSS--><a title="rss" target="_blank" rel="noopener nofollow" href="/atom.xml"><i class="iconfont icon-rss"></i></a><!-- 知乎--><a title="zhihu" target="_blank" rel="noopener nofollow" href="//zhihu.com/people/codefxxker"><i class="iconfont icon-zhihu"></i></a><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Coding Fxxker 2021</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script></body></html>
