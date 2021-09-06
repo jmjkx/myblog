@@ -1,43 +1,33 @@
 <!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>pandas 多线程数据处理</title><meta name="description" content="矩阵侠"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
 <!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/%E5%A4%B4%E5%83%8F.jpg"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。
 python并发编程主要包括以下三种：
-
-多进程：主要用于处理cpu密集型任务。
-
-多线程：主要用于处理i/o密集型任务.
-
-协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。
-
-
+1) 多进程：主要用于处理cpu密集型任务。
+2) 多线程：主要用于处理i/o密集型任务.
+3) 协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。
 这里详细概念、用法不作赘述， 笔者当年学习的时候看过几篇不错的入门， 地址这里给出。
 爱coding：python并行计算（上）：multiprocessing、multiprocess模块
 一文看懂Python多进程与多线程编程(工作学习面试必读)
 一篇文章搞定Python多进程(全)
 【面试高频问题】线程、进程、协程
-因为是处理i/o密集型任务，这里采用第二种并发方式(其实.."><!-- hexo injector head_end start -->
+因为是处理i/o密集型任务，这里采用第二种并发方.."><!-- hexo injector head_end start -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
-<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.2.0">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 5.2.0"><link rel="alternate" href="/atom.xml" title="MatrixMan's blog" type="application/atom+xml">
+
 <style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
-<link rel="alternate" href="/atom.xml" title="MatrixMan's blog" type="application/atom+xml">
-</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Coding Fxxker's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">pandas 多线程数据处理</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/pandas%20%E5%A4%9A%E7%BA%BF%E7%A8%8B"><i class="tag post-item-tag">pandas 多线程</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">pandas 多线程数据处理</h1><time class="has-text-grey" datetime="2021-05-19T01:12:19.000Z">2021-05-19</time><article class="mt-2 post-content"><p><img src="/2021/05/19/pandas-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E6%95%B0%E6%8D%AE%E5%A4%84%E7%90%86/%E7%86%8A%E7%8C%AB.jpg"><br>最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。</p>
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Coding Fxxker's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">pandas 多线程数据处理</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/pandas%20%E5%A4%9A%E7%BA%BF%E7%A8%8B"><i class="tag post-item-tag">pandas 多线程</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">pandas 多线程数据处理</h1><time class="has-text-grey" datetime="2021-05-19T01:12:19.000Z">2021-05-19</time><article class="mt-2 post-content"><p><img src="熊猫.jpg" alt=""><br>最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。</p>
 <p>python并发编程主要包括以下三种：</p>
-<ol>
-<li><p>多进程：主要用于处理cpu密集型任务。</p>
-</li>
-<li><p>多线程：主要用于处理i/o密集型任务.</p>
-</li>
-<li><p>协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。</p>
-</li>
-</ol>
+<p>1) 多进程：主要用于处理cpu密集型任务。</p>
+<p>2) 多线程：主要用于处理i/o密集型任务.</p>
+<p>3) 协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。</p>
 <p>这里详细概念、用法不作赘述， 笔者当年学习的时候看过几篇不错的入门， 地址这里给出。</p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46798399">爱coding：python并行计算（上）：multiprocessing、multiprocess模块</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46368084">一文看懂Python多进程与多线程编程(工作学习面试必读)</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/64702600">一篇文章搞定Python多进程(全)</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/70256971">【面试高频问题】线程、进程、协程</a></p>
 <p>因为是处理i/o密集型任务，这里采用第二种并发方式(其实是笔者没玩过协程哈哈)。废话不多说， 直接上核心框架:</p>
-<pre><code class="python">from threading import Thread
+<pre><code class="lang-python">from threading import Thread
 import pandas as pd
 
 class MyThread(Thread):
@@ -67,10 +57,11 @@ if __name__ == '__main__':
         p.start()
     for p in ThreadPool:
         p.join()
-    df = pd.concat([p.result for p in ThreadPool]) #把所有线程处理结果合并成要一个表格</code></pre>
-<p>这里注意__init__参数中， 有一个参数为*，这里参见前面文章<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/372492539">Python形参中*的作用(非*args，**kwargs)</a></p>
+    df = pd.concat([p.result for p in ThreadPool]) #把所有线程处理结果合并成要一个表格
+</code></pre>
+<p>这里注意<strong>init</strong>参数中， 有一个参数为<em>，这里参见前面文章<br>[Python形参中\</em>的作用(非<em>args，*</em>kwargs)](<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/372492539">https://zhuanlan.zhihu.com/p/372492539</a>)</p>
 <p>网上很多线程实现方案里， 都完全重写了<strong>init</strong> 和 run 方法， 把私货写进去。 笔者个人觉得， 官方库既然最原始这样写， 自然有它的道理。 我们在继承对象的时候， 要尽量少做改动， 尽量把自定义的东西(比方说任务)放在外面输入进API就可以了。下面实现一个简单的任务，使用广度优先(bfs，最大深度默认为3，要不然时间略长)统计系统(Win)各个磁盘文件路径、大小以及创建时间。</p>
-<pre><code class="python">def func(rootpath, maxdepth=3):
+<pre><code class="lang-python">def func(rootpath, maxdepth=3):
     df = pd.DataFrame()
     filepaths = [(rootpath, 0)]  #维护一个队列， 每个路径附带一个深度值
     while len(filepaths) != 0:
@@ -94,9 +85,10 @@ if __name__ == '__main__':
                         df.loc[idx, 'size'] = os.path.getsize(subfpath)
             except OSError:
                 pass
-    return df</code></pre>
+    return df
+</code></pre>
 <p>下面上完整代码：</p>
-<pre><code class="python"># -*- coding: utf-8 -*- 
+<pre><code class="lang-python"># -*- coding: utf-8 -*- 
 import datetime
 import os
 import time
