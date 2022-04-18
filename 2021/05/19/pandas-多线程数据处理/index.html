@@ -1,152 +1,152 @@
 <!DOCTYPE html><html class="appearance-auto" lang="en"><head><meta charset="UTF-8"><title>pandas 多线程数据处理</title><meta name="description" content="矩阵侠"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
-<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/%E5%A4%B4%E5%83%8F.jpg"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/%E5%A4%B4%E5%83%8F.jpg"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content=" 最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。
 python并发编程主要包括以下三种：
-1) 多进程：主要用于处理cpu密集型任务。
-2) 多线程：主要用于处理i/o密集型任务.
-3) 协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。
+
+多进程：主要用于处理cpu密集型任务。
+多线程：主要用于处理i/o密集型任务.
+协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。
+
 这里详细概念、用法不作赘述， 笔者当年学习的时候看过几篇不错的入门， 地址这里给出。
 爱coding：python并行计算（上）：multiprocessing、multiprocess模块
 一文看懂Python多进程与多线程编程(工作学习面试必读)
 一篇文章搞定Python多进程(全)
 【面试高频问题】线程、进程、协程
-因为是处理i/o密集型任务，这里采用第二种并发方.."><meta name="generator" content="Hexo 5.2.0">
+因为是处理i/o密集型任务，这里采用第二种并发方式(其实是笔.."><meta name="generator" content="Hexo 5.2.0">
 <style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
 <link rel="alternate" href="/atom.xml" title="MatrixMan's blog" type="application/atom+xml">
-</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Coding Fxxker's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">pandas 多线程数据处理</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/pandas%20%E5%A4%9A%E7%BA%BF%E7%A8%8B"><i class="tag post-item-tag">pandas 多线程</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">pandas 多线程数据处理</h1><time class="has-text-grey" datetime="2021-05-19T01:12:19.000Z">2021-05-19</time><article class="mt-2 post-content"><p><img src="熊猫.jpg" alt=""><br>最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。</p>
+</head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">Coding Fxxker's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">pandas 多线程数据处理</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Click back to the top</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">Home</a></h3><h3 class="is-inline-block"><a href="/about">About</a></h3><h3 class="is-inline-block"><a href="/archives">Archives</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/pandas%20%E5%A4%9A%E7%BA%BF%E7%A8%8B"><i class="tag post-item-tag">pandas 多线程</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">pandas 多线程数据处理</h1><time class="has-text-grey" datetime="2021-05-19T01:12:19.000Z">2021-05-19</time><article class="mt-2 post-content"><p><img src="熊猫.jpg"> 最近业务需要处理一批表格数据。处理过程中，成千上万条数据都需要进行i/o读写，自然而然要用到并发编程。</p>
 <p>python并发编程主要包括以下三种：</p>
-<p>1) 多进程：主要用于处理cpu密集型任务。</p>
-<p>2) 多线程：主要用于处理i/o密集型任务.</p>
-<p>3) 协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。</p>
+<ol type="1">
+<li><p>多进程：主要用于处理cpu密集型任务。</p></li>
+<li><p>多线程：主要用于处理i/o密集型任务.</p></li>
+<li><p>协程：为了解决2) 线程之间切换资源开销浪费而产生，又叫微线程， 通常和多进程配合使用， 效果奇佳。</p></li>
+</ol>
 <p>这里详细概念、用法不作赘述， 笔者当年学习的时候看过几篇不错的入门， 地址这里给出。</p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46798399">爱coding：python并行计算（上）：multiprocessing、multiprocess模块</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/46368084">一文看懂Python多进程与多线程编程(工作学习面试必读)</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/64702600">一篇文章搞定Python多进程(全)</a></p>
 <p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/70256971">【面试高频问题】线程、进程、协程</a></p>
 <p>因为是处理i/o密集型任务，这里采用第二种并发方式(其实是笔者没玩过协程哈哈)。废话不多说， 直接上核心框架:</p>
-<pre><code class="lang-python">from threading import Thread
-import pandas as pd
-
-class MyThread(Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs=None, *, daemon=None) -&gt; None:   #这里定义直接copy Thread类里原生定义
-        super().__init__(group=group, target=target, 
-                        name=name, args=args, 
-                        kwargs=kwargs, daemon=daemon)  
-
-    def run(self) -&gt; None:
-        try:
-            if self._target:
-                self.result = self._target(*self._args, **self._kwargs) #与Thread类唯一不同的是， 我们用类内属性result保存每个线程结果
-        finally:
-            del self._target, self._args, self._kwargs
-
-
-if __name__ == '__main__':
-    ThreadPool = []
-    for i in iterator:  #伪代码， 表示一个迭代器生成多个任务
-        ThreadPool.append(MyThread(arget=func, args=(*args,)))  
-    # 线程池中添加一个线程
-    # 注意这个线程池是一个广义的概念
-    # 你可以用任意数据结构来实现
-    # 方便存入、操作线程对象即可
-    for p in ThreadPool:
-        p.start()
-    for p in ThreadPool:
-        p.join()
-    df = pd.concat([p.result for p in ThreadPool]) #把所有线程处理结果合并成要一个表格
-</code></pre>
-<p>这里注意<strong>init</strong>参数中， 有一个参数为<em>，这里参见前面文章<br>[Python形参中\</em>的作用(非<em>args，*</em>kwargs)](<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/372492539">https://zhuanlan.zhihu.com/p/372492539</a>)</p>
-<p>网上很多线程实现方案里， 都完全重写了<strong>init</strong> 和 run 方法， 把私货写进去。 笔者个人觉得， 官方库既然最原始这样写， 自然有它的道理。 我们在继承对象的时候， 要尽量少做改动， 尽量把自定义的东西(比方说任务)放在外面输入进API就可以了。下面实现一个简单的任务，使用广度优先(bfs，最大深度默认为3，要不然时间略长)统计系统(Win)各个磁盘文件路径、大小以及创建时间。</p>
-<pre><code class="lang-python">def func(rootpath, maxdepth=3):
-    df = pd.DataFrame()
-    filepaths = [(rootpath, 0)]  #维护一个队列， 每个路径附带一个深度值
-    while len(filepaths) != 0:
-        cur_path, cur_depth = filepaths.pop(0)
-        if cur_depth &gt;= maxdepth:  #深度达到最大深度停止搜索
-            idx = len(df)  
-            df.loc[idx, 'path'] = os.path.join(cur_path)  #记录路径
-            df.loc[idx, 'date'] = os.path.getctime(cur_path)  #记录时间
-            df.loc[idx, 'size'] = os.path.getsize(cur_path)  #记录文件大小
-        else:
-            try:  #这个纯粹是因为Win系统有些路径不让访问报OSError， 哪怕开了管理员权限
-                subfiles = os.listdir(cur_path)
-                for f in subfiles:
-                    subfpath = os.path.join(cur_path, f)
-                    if os.path.isdir(subfpath):
-                        filepaths.append((subfpath, cur_depth+1))  #如果是文件夹, 继续bfs搜索
-                    else:
-                        idx = len(df)
-                        df.loc[idx, 'path'] = os.path.join(subfpath)
-                        df.loc[idx, 'date'] = os.path.getctime(subfpath)
-                        df.loc[idx, 'size'] = os.path.getsize(subfpath)
-            except OSError:
-                pass
-    return df
-</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> threading <span class="im">import</span> Thread</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MyThread(Thread):</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, group<span class="op">=</span><span class="va">None</span>, target<span class="op">=</span><span class="va">None</span>, name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 args<span class="op">=</span>(), kwargs<span class="op">=</span><span class="va">None</span>, <span class="op">*</span>, daemon<span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:   <span class="co">#这里定义直接copy Thread类里原生定义</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(group<span class="op">=</span>group, target<span class="op">=</span>target, </span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>                        name<span class="op">=</span>name, args<span class="op">=</span>args, </span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                        kwargs<span class="op">=</span>kwargs, daemon<span class="op">=</span>daemon)  </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> run(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="va">self</span>._target:</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.result <span class="op">=</span> <span class="va">self</span>._target(<span class="op">*</span><span class="va">self</span>._args, <span class="op">**</span><span class="va">self</span>._kwargs) <span class="co">#与Thread类唯一不同的是， 我们用类内属性result保存每个线程结果</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">finally</span>:</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>            <span class="kw">del</span> <span class="va">self</span>._target, <span class="va">self</span>._args, <span class="va">self</span>._kwargs</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    ThreadPool <span class="op">=</span> []</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> iterator:  <span class="co">#伪代码， 表示一个迭代器生成多个任务</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        ThreadPool.append(MyThread(arget<span class="op">=</span>func, args<span class="op">=</span>(<span class="op">*</span>args,)))  </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 线程池中添加一个线程</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 注意这个线程池是一个广义的概念</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 你可以用任意数据结构来实现</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 方便存入、操作线程对象即可</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> ThreadPool:</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>        p.start()</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> ThreadPool:</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>        p.join()</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.concat([p.result <span class="cf">for</span> p <span class="kw">in</span> ThreadPool]) <span class="co">#把所有线程处理结果合并成要一个表格</span></span></code></pre></div>
+<p>这里注意__init__参数中， 有一个参数为*，这里参见前面文章 <a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/372492539">Python形参中*的作用(非*args，**kwargs)</a></p>
+<p>网上很多线程实现方案里， 都完全重写了__init__ 和 run 方法， 把私货写进去。 笔者个人觉得， 官方库既然最原始这样写， 自然有它的道理。 我们在继承对象的时候， 要尽量少做改动， 尽量把自定义的东西(比方说任务)放在外面输入进API就可以了。下面实现一个简单的任务，使用广度优先(bfs，最大深度默认为3，要不然时间略长)统计系统(Win)各个磁盘文件路径、大小以及创建时间。</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> func(rootpath, maxdepth<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame()</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    filepaths <span class="op">=</span> [(rootpath, <span class="dv">0</span>)]  <span class="co">#维护一个队列， 每个路径附带一个深度值</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(filepaths) <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>        cur_path, cur_depth <span class="op">=</span> filepaths.pop(<span class="dv">0</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cur_depth <span class="op">&gt;=</span> maxdepth:  <span class="co">#深度达到最大深度停止搜索</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>            idx <span class="op">=</span> <span class="bu">len</span>(df)  </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            df.loc[idx, <span class="st">'path'</span>] <span class="op">=</span> os.path.join(cur_path)  <span class="co">#记录路径</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            df.loc[idx, <span class="st">'date'</span>] <span class="op">=</span> os.path.getctime(cur_path)  <span class="co">#记录时间</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>            df.loc[idx, <span class="st">'size'</span>] <span class="op">=</span> os.path.getsize(cur_path)  <span class="co">#记录文件大小</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:  <span class="co">#这个纯粹是因为Win系统有些路径不让访问报OSError， 哪怕开了管理员权限</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>                subfiles <span class="op">=</span> os.listdir(cur_path)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> f <span class="kw">in</span> subfiles:</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>                    subfpath <span class="op">=</span> os.path.join(cur_path, f)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> os.path.isdir(subfpath):</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                        filepaths.append((subfpath, cur_depth<span class="op">+</span><span class="dv">1</span>))  <span class="co">#如果是文件夹, 继续bfs搜索</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span>:</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                        idx <span class="op">=</span> <span class="bu">len</span>(df)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                        df.loc[idx, <span class="st">'path'</span>] <span class="op">=</span> os.path.join(subfpath)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                        df.loc[idx, <span class="st">'date'</span>] <span class="op">=</span> os.path.getctime(subfpath)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>                        df.loc[idx, <span class="st">'size'</span>] <span class="op">=</span> os.path.getsize(subfpath)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">OSError</span>:</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                <span class="cf">pass</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code></pre></div>
 <p>下面上完整代码：</p>
-<pre><code class="lang-python"># -*- coding: utf-8 -*- 
-import datetime
-import os
-import time
-from threading import Thread
-import pandas as pd
-
-
-def func(rootpath, maxdepth=3):
-    df = pd.DataFrame()
-    filepaths = [(rootpath, 0)]  #维护一个队列， 每个路径附带一个深度值
-    while len(filepaths) != 0:
-        cur_path, cur_depth = filepaths.pop(0)
-        if cur_depth &gt;= maxdepth:  #深度达到最大深度停止搜索
-            idx = len(df)  
-            df.loc[idx, 'path'] = os.path.join(cur_path)  #记录路径
-            df.loc[idx, 'date'] = os.path.getctime(cur_path)  #记录时间
-            df.loc[idx, 'size'] = os.path.getsize(cur_path)  #记录文件大小
-        else:
-            try:  #这个纯粹是因为Win系统有些路径不让访问报OSError， 哪怕开了管理员权限
-                subfiles = os.listdir(cur_path)
-                for f in subfiles:
-                    subfpath = os.path.join(cur_path, f)
-                    if os.path.isdir(subfpath):
-                        filepaths.append((subfpath, cur_depth+1))  #如果是文件夹, 继续bfs搜索
-                    else:
-                        idx = len(df)
-                        df.loc[idx, 'path'] = os.path.join(subfpath)
-                        df.loc[idx, 'date'] = os.path.getctime(subfpath)
-                        df.loc[idx, 'size'] = os.path.getsize(subfpath)
-            except OSError:
-                pass
-    return df
-
-
-class MyThread(Thread):
-    def __init__(self, group=None, target=None, name=None,
-                 args=(), kwargs=None, *, daemon=None) -&gt; None:   #这里定义直接copy Thread类里原生定义
-        super().__init__(group=group, target=target, 
-                        name=name, args=args, 
-                        kwargs=kwargs, daemon=daemon)  
-
-    def run(self) -&gt; None:
-        try:
-            if self._target:
-                self.result = self._target(*self._args, **self._kwargs) #与Thread类唯一不同的是， 我们用类内属性result保存每个线程结果
-        finally:
-            del self._target, self._args, self._kwargs
-
-
-if __name__ == '__main__':
-    ThreadPool = []
-    ThreadPool.append(MyThread(target=func, args=('c:/', 3)))
-    ThreadPool.append(MyThread(target=func, args=('d:/', 3)))
-    ThreadPool.append(MyThread(target=func, args=('e:/', 3)))
-    for p in ThreadPool:
-        p.start()
-    for p in ThreadPool:
-        p.join()
-    df = pd.concat([p.result for p in ThreadPool])
-    df.to_csv('thread.csv', index=None)
-</code></pre>
-<p>收工！</p>
-<hr>
-<p>码痴， coding 改变人生！</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># -*- coding: utf-8 -*- </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> datetime</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> threading <span class="im">import</span> Thread</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> func(rootpath, maxdepth<span class="op">=</span><span class="dv">3</span>):</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame()</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    filepaths <span class="op">=</span> [(rootpath, <span class="dv">0</span>)]  <span class="co">#维护一个队列， 每个路径附带一个深度值</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(filepaths) <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        cur_path, cur_depth <span class="op">=</span> filepaths.pop(<span class="dv">0</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cur_depth <span class="op">&gt;=</span> maxdepth:  <span class="co">#深度达到最大深度停止搜索</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>            idx <span class="op">=</span> <span class="bu">len</span>(df)  </span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>            df.loc[idx, <span class="st">'path'</span>] <span class="op">=</span> os.path.join(cur_path)  <span class="co">#记录路径</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>            df.loc[idx, <span class="st">'date'</span>] <span class="op">=</span> os.path.getctime(cur_path)  <span class="co">#记录时间</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>            df.loc[idx, <span class="st">'size'</span>] <span class="op">=</span> os.path.getsize(cur_path)  <span class="co">#记录文件大小</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>:  <span class="co">#这个纯粹是因为Win系统有些路径不让访问报OSError， 哪怕开了管理员权限</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                subfiles <span class="op">=</span> os.listdir(cur_path)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                <span class="cf">for</span> f <span class="kw">in</span> subfiles:</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                    subfpath <span class="op">=</span> os.path.join(cur_path, f)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">if</span> os.path.isdir(subfpath):</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>                        filepaths.append((subfpath, cur_depth<span class="op">+</span><span class="dv">1</span>))  <span class="co">#如果是文件夹, 继续bfs搜索</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span>:</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>                        idx <span class="op">=</span> <span class="bu">len</span>(df)</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>                        df.loc[idx, <span class="st">'path'</span>] <span class="op">=</span> os.path.join(subfpath)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>                        df.loc[idx, <span class="st">'date'</span>] <span class="op">=</span> os.path.getctime(subfpath)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>                        df.loc[idx, <span class="st">'size'</span>] <span class="op">=</span> os.path.getsize(subfpath)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span> <span class="pp">OSError</span>:</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>                <span class="cf">pass</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MyThread(Thread):</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, group<span class="op">=</span><span class="va">None</span>, target<span class="op">=</span><span class="va">None</span>, name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>                 args<span class="op">=</span>(), kwargs<span class="op">=</span><span class="va">None</span>, <span class="op">*</span>, daemon<span class="op">=</span><span class="va">None</span>) <span class="op">-&gt;</span> <span class="va">None</span>:   <span class="co">#这里定义直接copy Thread类里原生定义</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(group<span class="op">=</span>group, target<span class="op">=</span>target, </span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>                        name<span class="op">=</span>name, args<span class="op">=</span>args, </span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>                        kwargs<span class="op">=</span>kwargs, daemon<span class="op">=</span>daemon)  </span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> run(<span class="va">self</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> <span class="va">self</span>._target:</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>                <span class="va">self</span>.result <span class="op">=</span> <span class="va">self</span>._target(<span class="op">*</span><span class="va">self</span>._args, <span class="op">**</span><span class="va">self</span>._kwargs) <span class="co">#与Thread类唯一不同的是， 我们用类内属性result保存每个线程结果</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        <span class="cf">finally</span>:</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>            <span class="kw">del</span> <span class="va">self</span>._target, <span class="va">self</span>._args, <span class="va">self</span>._kwargs</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">'__main__'</span>:</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    ThreadPool <span class="op">=</span> []</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    ThreadPool.append(MyThread(target<span class="op">=</span>func, args<span class="op">=</span>(<span class="st">'c:/'</span>, <span class="dv">3</span>)))</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    ThreadPool.append(MyThread(target<span class="op">=</span>func, args<span class="op">=</span>(<span class="st">'d:/'</span>, <span class="dv">3</span>)))</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    ThreadPool.append(MyThread(target<span class="op">=</span>func, args<span class="op">=</span>(<span class="st">'e:/'</span>, <span class="dv">3</span>)))</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> ThreadPool:</span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        p.start()</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> p <span class="kw">in</span> ThreadPool:</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>        p.join()</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.concat([p.result <span class="cf">for</span> p <span class="kw">in</span> ThreadPool])</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>    df.to_csv(<span class="st">'thread.csv'</span>, index<span class="op">=</span><span class="va">None</span>)</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>   </span></code></pre></div>
+<p>收工！ *** 码痴， coding 改变人生！</p>
 </article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2021/07/05/%E9%9B%B6%E5%9F%BA%E7%A1%80%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA%E5%85%AC%E5%BC%80%E6%95%B0%E6%8D%AE%E9%9B%86python%E7%88%AC%E8%99%AB/" title="零基础快速搭建公开数据集python爬虫"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">Previous: 零基础快速搭建公开数据集python爬虫</span></a><a class="button is-default" href="/2021/05/19/Python%E5%BD%A2%E5%8F%82%E4%B8%AD-%E7%9A%84%E4%BD%9C%E7%94%A8-%E9%9D%9E-args-kwargs/" title="Python形参中*的作用(非*args**kwargs)"><span class="has-text-weight-semibold">Next: Python形参中*的作用(非*args**kwargs)</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="Haojen/Claudia-theme-blog" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><a title="twitter" target="_blank" rel="noopener nofollow" href="//twitter.com/jmjkx111"><i class="iconfont icon-twitter"></i></a><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/jmjkx"><i class="iconfont icon-github"></i></a><!-- Ins--><a title="instagram" target="_blank" rel="noopener nofollow" href="//www.instagram.com/jmjkx"><i class="iconfont icon-ins"></i></a><!-- RSS--><a title="rss" target="_blank" rel="noopener nofollow" href="/atom.xml"><i class="iconfont icon-rss"></i></a><!-- 知乎--><a title="zhihu" target="_blank" rel="noopener nofollow" href="//zhihu.com/people/codefxxker"><i class="iconfont icon-zhihu"></i></a><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> Coding Fxxker 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script></body></html>
